@@ -25,15 +25,15 @@ export default function Home() {
         <div className="flex flex-col gap-2 mb-6 text-sm font-medium text-gray-700">
            <div className="flex items-center">
              <span className="w-3 h-3 bg-green-600 rounded-full mr-3 shadow-sm"></span> 
-             Rented (Generating Revenue)
+             Lejet (Genererer Indtægter)
            </div>
            <div className="flex items-center">
              <span className="w-3 h-3 bg-red-600 rounded-full mr-3 shadow-sm"></span> 
-             Full (Needs Pickup)
+             Fuld (Skal Afhentes)
            </div>
            <div className="flex items-center">
              <span className="w-3 h-3 bg-gray-500 rounded-full mr-3 shadow-sm"></span> 
-             In Yard (Available)
+             I Gården (Tilgængelig)
            </div>
         </div>
 
