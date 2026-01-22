@@ -13,7 +13,7 @@ export default function DriverPage() {
   const [skips, setSkips] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
-  // Fetch all skips on load
+  // Fetch data on load
   useEffect(() => {
     fetchSkips()
   }, [])
@@ -23,66 +23,59 @@ export default function DriverPage() {
     if (data) setSkips(data)
   }
 
-  // The Magic Logic: Update status based on current state
+  // Status Cycle: Grey -> Green -> Red -> Grey
   const cycleStatus = async (id: string, currentStatus: string) => {
     setLoading(true)
     let newStatus = ''
     
-    // The Lifecycle: Grey -> Green -> Red -> Grey
     if (currentStatus === 'grey') newStatus = 'green'
     else if (currentStatus === 'green') newStatus = 'red'
     else if (currentStatus === 'red') newStatus = 'grey'
 
-    // Update Supabase
     await supabase.from('skips').update({ status: newStatus }).eq('id', id)
-    
-    // Refresh the list locally to show change instantly
     fetchSkips()
     setLoading(false)
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-4">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">🚛 Driver Task List</h1>
-
-      <div className="space-y-4">
+    <div className="min-h-screen bg-gray-100 p-4">
+      {/* Danish Header */}
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">🚛 Chauffør Liste</h1>
+      
+      <div className="flex flex-col gap-4">
         {skips.map((skip) => (
-          <div key={skip.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-3">
-            
-            {/* Header Info */}
-            <div className="flex justify-between items-start">
+          <div key={skip.id} className="bg-white p-5 rounded-xl shadow border border-gray-200">
+            <div className="flex justify-between items-center mb-4">
               <div>
                 <h2 className="font-bold text-lg">{skip.id}</h2>
-                <p className="text-gray-500 text-sm">{skip.address}</p>
-                <p className="text-gray-400 text-xs">{skip.client_name}</p>
+                <p className="text-gray-500 text-sm">{skip.client_name}</p>
               </div>
-              
               {/* Status Badge */}
-              <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide text-white
+              <div className={`px-2 py-1 rounded text-white text-xs font-bold uppercase
                 ${skip.status === 'red' ? 'bg-red-500' : 
                   skip.status === 'green' ? 'bg-green-500' : 'bg-gray-500'}`}>
-                {skip.status}
+                {/* Translate Status Text on Badge */}
+                {skip.status === 'red' ? 'FULD' : 
+                 skip.status === 'green' ? 'UDE' : 'HJEMME'}
               </div>
             </div>
 
-            {/* The Big Action Button */}
+            {/* The Big Button (Danish) */}
             <button 
               onClick={() => cycleStatus(skip.id, skip.status)}
               disabled={loading}
-              className={`w-full py-4 rounded-lg font-bold text-white shadow-md transition-all active:scale-95
-                ${skip.status === 'grey' ? 'bg-green-600 hover:bg-green-700' : 
-                  skip.status === 'green' ? 'bg-red-600 hover:bg-red-700' : 
-                  'bg-gray-600 hover:bg-gray-700'}`}
+              className={`w-full py-3 rounded-lg font-bold text-white transition-colors shadow-sm
+                ${skip.status === 'grey' ? 'bg-green-600 active:bg-green-800' : 
+                  skip.status === 'green' ? 'bg-red-600 active:bg-red-800' : 
+                  'bg-gray-600 active:bg-gray-800'}`}
             >
-              {loading ? 'Updating...' : 
-               skip.status === 'grey' ? '🚀 MARK AS DROPPED' : 
-               skip.status === 'green' ? '⚠️ REPORT FULL' : 
-               '✅ MARK AS COLLECTED'}
+              {skip.status === 'grey' ? '🚚 LEVERET HOS KUNDE' : 
+               skip.status === 'green' ? '⚠️ MELD FULD / KLAR' : 
+               '✅ HENTET HJEM'}
             </button>
-
           </div>
         ))}
       </div>
-    </main>
+    </div>
   )
 }
