@@ -40,9 +40,9 @@ export default function Home() {
         {/* Action Button */}
        <button 
   onClick={() => alert("🔐 DEMO MODE: Oprettelse af nye containere er låst i denne offentlige version.")}
-  className="w-full bg-blue-600 ... (rest of your class names)"
+  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
 >
-  + New Job
+  + Ny Container
 </button>
       </div>
 
