@@ -5,7 +5,6 @@ import 'leaflet/dist/leaflet.css'
 import { useEffect, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
-// Initialize Supabase
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -13,25 +12,25 @@ const supabase = createClient(
 
 export default function Map() {
   const [skips, setSkips] = useState<any[]>([])
-  const [error, setError] = useState<string>('')
+
+  const fetchSkips = async () => {
+    const { data } = await supabase.from('skips').select('*')
+    if (data) setSkips(data)
+  }
 
   useEffect(() => {
-    const fetchSkips = async () => {
-      // Fetch data
-      const { data, error } = await supabase.from('skips').select('*')
-      
-      if (error) {
-        console.error('Supabase Error:', error)
-        setError(error.message)
-      } else {
-        setSkips(data || [])
-      }
-    }
+    // 1. Load data immediately when page opens
     fetchSkips()
-  }, [])
 
-  // If we have an error, show it on screen so we know
-  if (error) return <div className="p-10 text-red-600 font-bold">Error: {error}</div>
+    // 2. Set up a timer to refresh every 5 seconds (5000 ms)
+    const interval = setInterval(() => {
+      console.log("Auto-refreshing map data...") // You can see this in Console
+      fetchSkips()
+    }, 5000)
+
+    // 3. Clean up the timer when the user leaves the page
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <MapContainer 
@@ -44,16 +43,15 @@ export default function Map() {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       
-      {/* Loop through data and draw Circle Dots instead of Image Pins */}
       {skips.map((skip) => (
         <CircleMarker 
           key={skip.id} 
           center={[skip.lat, skip.lng]} 
-          radius={12} // Size of the dot
+          radius={12} 
           pathOptions={{ 
-            color: 'white', // Border color
+            color: 'white', 
             weight: 2,
-            fillColor: skip.status === 'red' ? '#DC2626' : skip.status === 'green' ? '#16A34A' : '#6B7280', // Red/Green/Grey
+            fillColor: skip.status === 'red' ? '#DC2626' : skip.status === 'green' ? '#16A34A' : '#6B7280', 
             fillOpacity: 1
           }}
         >
